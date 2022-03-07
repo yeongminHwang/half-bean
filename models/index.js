@@ -1,6 +1,10 @@
-const Sequelize = require('sequelize');
+'use strict';
 
-const env =process.env.NODE_DEV || 'development';// 지정된 환경변수가 없으면 'development'로 지정
+const fs = require('fs');
+const path = require('path');
+const Sequelize = require('sequelize');
+const basename = path.basename(__filename);
+const env = process.env.NODE_ENV || 'development';
 
 // config/config.json 파일에 있는 설정값들을 불러온다. 
 // config객체의 env변수(development)키 의 객체값들을 불러온다. 
@@ -11,9 +15,27 @@ const db = {};
 // new Sequelize를 통해 MySQL 연결 객체를 생성한다.
 const sequelize =new Sequelize(config.database, config.username, config.password, config);
 
-// 연결객체를 나중에 재사용하기 위해 db.sequelize에 넣어둔다.
+
+// 우리가 작성한 Table파일을 찾아온다.
+fs
+  .readdirSync(__dirname)
+  .filter(file => {
+    return (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js');
+  })
+  .forEach(file => {
+    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
+    db[model.name] = model;
+  });
+
+//DB에 모델이름을 연결한다.
+Object.keys(db).forEach(modelName => {
+
+  if (db[modelName].associate) {
+    db[modelName].associate(db);
+  }
+});
+
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-// 모듈로 꺼낸다.
 module.exports = db;
