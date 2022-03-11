@@ -77,19 +77,17 @@ module.exports = (sequelize, DataTypes) => {
         
         //==========================================
 
-        /*
+        
         User.associate = models => {
             User.hasMany(models.Post, {foreignKey : "user_id"});
         };
         
+
+        
         User.associate = models => {
             User.hasMany(models.User_blame_Post, {foreignKey : "user_id"});
         };
-        */
-
-        // User.associate = models => {
-        //     User.hasMany(models.User_like_Post, {foreignKey : "user_id", sourceKey:"user_id"});
-        // };
+        
 
 
 
