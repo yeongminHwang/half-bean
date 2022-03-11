@@ -67,12 +67,32 @@ module.exports = (sequelize, DataTypes) => {
         });
 
         User.associate = models => {
-            User.belongsTo(models.Area, {foreignKey : "area_id", sourceKey:"area_id"});
+            User.belongsTo(models.Area, {foreignKey : "area_id", targetkey:"area_id"});
         };
 
+
         User.associate = models => {
-            User.hasMany(models.Post, {foreignKey : "user_id", sourceKey:"user_id"});
+            User.belongsToMany(models.Point, {through:"Point_history", foreignKey : "user_id"});
         };
+        
+        //==========================================
+
+        /*
+        User.associate = models => {
+            User.hasMany(models.Post, {foreignKey : "user_id"});
+        };
+        
+        User.associate = models => {
+            User.hasMany(models.User_blame_Post, {foreignKey : "user_id"});
+        };
+        */
+
+        // User.associate = models => {
+        //     User.hasMany(models.User_like_Post, {foreignKey : "user_id", sourceKey:"user_id"});
+        // };
+
+
+
   
     return User;
   };
