@@ -45,11 +45,13 @@ module.exports = (sequelize, DataTypes) => {
                 defaultValue: null,
                 comment: "프로필 이미지",
             },
+            /*
             setting_Notice: {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,
                 comment: "알림설정",
             },
+            */
             is_master: {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,
@@ -79,6 +81,10 @@ module.exports = (sequelize, DataTypes) => {
             // User:Point => 
             User.belongsToMany(models.Point, {through:"Point_history", foreignKey : "user_id"});
             
+            User.hasMany(models.ChatMessage, { foreignKey: "user_id", });
+            User.hasMany(models.User_join_ChatRoom, { foreignKey: "user_id", });
+
+            User.belongsToMany(models.Notification, {through:"User_set_Notification", foreignKey : "user_id"});
           };
 
 
