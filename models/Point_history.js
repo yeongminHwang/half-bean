@@ -22,13 +22,10 @@ module.exports = (sequelize, DataTypes) => {
         /*
         Point_history.associate = models => {
             Point_history.belongsTo(models.User, {foreignKey : "point_history_id"});
-        };
-
-        Point_history.associate = models => {
             Point_history.belongsTo(models.Point, {foreignKey : "point_history_id"});
         };
         */
-  
+ 
   
     return Point_history;
   };

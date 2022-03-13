@@ -48,7 +48,13 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: true,
                 comment: "게시글에 들어갈 사진",
             },
-            // create_datatime과 update_datatime 자동으로 생성되던데 따로 추가해야하나??
+            /*
+            user_id: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                comment: "user_id. . . ? user의 fk여야함..",
+            },
+            */
         },
         {
             collate: "utf8_general_ci", // 한국어 설정  
@@ -61,8 +67,12 @@ module.exports = (sequelize, DataTypes) => {
         });
 
         Post.associate = models => {
-            Post.belongsTo(models.User, {foreignKey : "user_id", sourceKey:"user_id"});
-        };
+            Post.belongsTo(models.User, {foreignKey : "user_id"});
+            Post.hasMany(models.User_blame_Post, { foreignKey: "post_id", });
+            Post.hasMany(models.User_like_Post, { foreignKey: "post_id", });
+          };
+      
+
   
     return Post;
   };

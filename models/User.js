@@ -66,30 +66,20 @@ module.exports = (sequelize, DataTypes) => {
             paranoid: true,             // timestamps 가 활성화 되어야 사용 가능 > deleteAt 옵션 on
         });
 
+
+
         User.associate = models => {
+            // User는 Area와 N:1
             User.belongsTo(models.Area, {foreignKey : "area_id", targetkey:"area_id"});
-        };
-
-
-        User.associate = models => {
+            // User:Post => 1:N
+            User.hasMany(models.Post, { foreignKey: "user_id" });
+            // User:User_blame_Post => 1:N
+            User.hasMany(models.User_blame_Post, { foreignKey: "user_id", });
+            User.hasMany(models.User_like_Post, { foreignKey: "user_id", });
+            // User:Point => 
             User.belongsToMany(models.Point, {through:"Point_history", foreignKey : "user_id"});
-        };
-        
-        //==========================================
-
-        /*
-        User.associate = models => {
-            User.hasMany(models.Post, {foreignKey : "user_id"});
-        };
-        
-        User.associate = models => {
-            User.hasMany(models.User_blame_Post, {foreignKey : "user_id"});
-        };
-        */
-
-        // User.associate = models => {
-        //     User.hasMany(models.User_like_Post, {foreignKey : "user_id", sourceKey:"user_id"});
-        // };
+            
+          };
 
 
 
