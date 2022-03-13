@@ -8,6 +8,11 @@ module.exports = (sequelize, DataTypes) => {
                 primaryKey: true,
                 comment: "point_history_id (PK)",
             },
+            flag: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                comment: "획득(1) or 회수,사용(0)",
+            },
         },
         {
             collate: "utf8_general_ci", // 한국어 설정  

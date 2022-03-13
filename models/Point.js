@@ -8,6 +8,22 @@ module.exports = (sequelize, DataTypes) => {
                 primaryKey: true,
                 comment: "point_id (PK)",
             },
+            // content, amount, type
+            content: {
+                type: DataTypes.STRING(500),
+                allowNull: false,
+                comment: "point 크기",
+            }, 
+            amount: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                comment: "point 크기",
+            }, 
+            type: {
+                type: DataTypes.STRING(100),
+                allowNull: true,
+                comment: "이거 무슨 타입이었죠 ㅇㅅㅇ?",
+            }, 
         },
         {
             collate: "utf8_general_ci", // 한국어 설정  
