@@ -22,12 +22,9 @@ module.exports = (sequelize, DataTypes) => {
         
         User_blame_Post.associate = models => {
             User_blame_Post.belongsTo(models.User, {foreignKey : "user_id"});
-        };
-        
-
-        User_blame_Post.associate = models => {
             User_blame_Post.belongsTo(models.Post, {foreignKey : "post_id"});
         };
+
         
 
     return User_blame_Post;

@@ -26,6 +26,7 @@ module.exports = (sequelize, DataTypes) => {
 
         Area.associate = models => {
             Area.hasMany(models.User, {foreignKey : "area_id", sourceKey:"area_id"});
-        };
+          };
+        
     return Area;
   };
