@@ -19,7 +19,7 @@ module.exports = (app) => {
       return res.status(200).json({ success: true, response: user });
     } catch (e) {
       console.log(e);
-      res.status(500).json({ success: false, errorMsg: e.message });
+      res.status(400).json({ success: false, errorMsg: e.message });
     }
   });
 
@@ -33,7 +33,7 @@ module.exports = (app) => {
       return res.status(200).json({ success: true, response: isDouble });
     } catch (e) {
       console.log(e);
-      res.status(500).json({ success: false, errorMsg: e.message });
+      res.status(400).json({ success: false, errorMsg: e.message });
     }
   });
 };

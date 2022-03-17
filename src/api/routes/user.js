@@ -15,7 +15,7 @@ module.exports = (app) => {
 
       return res.status(201).json({ success: true, response: user });
     } catch (e) {
-      res.status(500).json({ success: false, errorMsg: e.message });
+      res.status(400).json({ success: false, errorMsg: e.message });
     }
   });
 
@@ -29,7 +29,7 @@ module.exports = (app) => {
 
       return res.status(200).json({ success: true, response: user });
     } catch (e) {
-      res.status(500).json({ success: false, errorMsg: e.message });
+      res.status(400).json({ success: false, errorMsg: e.message });
     }
   });
 
@@ -41,10 +41,10 @@ module.exports = (app) => {
       const isDeleted = await user_service.deleteUser(userId);
 
       return res
-        .status(200)
-        .json({ success: true, response: { isDeleted: isDeleted } });
+        .status(isDeleted ? 200 : 400)
+        .json({ success: isDeleted, response: { isDeleted: isDeleted } });
     } catch (e) {
-      res.status(500).json({ success: false, errorMsg: e.message });
+      res.status(400).json({ success: false, errorMsg: e.message });
     }
   });
 
@@ -56,10 +56,10 @@ module.exports = (app) => {
       const isDeleted = await user_service.deleteUser_admin(target_userId);
 
       return res
-        .status(200)
-        .json({ success: true, response: { isDeleted: isDeleted } });
+        .status(isDeleted ? 200 : 400)
+        .json({ success: isDeleted, response: { isDeleted: isDeleted } });
     } catch (e) {
-      res.status(500).json({ success: false, errorMsg: e.message });
+      res.status(400).json({ success: false, errorMsg: e.message });
     }
   });
 
@@ -74,10 +74,10 @@ module.exports = (app) => {
         const isRestored = await user_service.reStoreUser_admin(target_userId);
 
         return res
-          .status(200)
+          .status(isRestored ? 200 : 400)
           .json({ success: true, response: { isRestored: isRestored } });
       } catch (e) {
-        res.status(500).json({ success: false, errorMsg: e.message });
+        res.status(400).json({ success: false, errorMsg: e.message });
       }
     }
   );
