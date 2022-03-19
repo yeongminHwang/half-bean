@@ -23,6 +23,9 @@ module.exports = (app) => {
         // 세션 저장
         req.session.login_id = login_id;
         req.session.logined = true;
+        if (user.is_master) req.session.admin = true;
+        else req.session.admin = false;
+
         console.log(req.session);
         // req.session.save(function() {
         //   console.log('[+] 로그인 세션 생성 성공 ',req.session.logined);
