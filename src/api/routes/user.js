@@ -8,6 +8,25 @@ module.exports = (app) => {
   // ***/api/user 로 들어오는 요청 처리 담당
   app.use("/user", router);
 
+  
+  // session check test
+  router.get("/test",  async (req, res, next) => {
+    try {
+      if(req.session.logined) {
+        console.log('[+] 로그인 세션이 존재합니다. (로긴되어잇음)');
+        return res.status(200).json({ success: true });
+      } else {
+        console.log('[-] 로그인 세션이 존재하지 않습니다.');
+        return res.status(201).json({ success: false });
+      }
+
+    } catch (e) {
+      console.log('[!]');
+      res.status(400).json({ success: false});
+    }
+  });
+
+
   // 회원가입
   router.post("/", async (req, res, next) => {
     try {
