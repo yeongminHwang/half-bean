@@ -13,12 +13,12 @@ module.exports = {
   },
 
   // 회원정보 수정
-  async updateUser(user_pk, userInput) {
+  async updateUser(login_id, userInput) {
     try {
-      await db.User.update({ ...userInput }, { where: { user_id: user_pk } });
+      await db.User.update({ ...userInput }, { where: { login_id: login_id } });
 
       const user = await db.User.findOne({
-        where: { user_id: user_pk },
+        where: { login_id: login_id },
       });
 
       if (!user) {
@@ -33,14 +33,14 @@ module.exports = {
   },
 
   // 회원탈퇴
-  async deleteUser(user_pk) {
+  async deleteUser(login_id) {
     try {
       const user = await db.User.destroy({
-        where: { user_id: user_pk },
+        where: { login_id: login_id },
         force: true, // 테이블에서 강제 삭제 옵션
       });
 
-      return user === 1 ? true : false;
+      return user >= 1 ? true : false;
     } catch (e) {
       console.log(e);
       throw e;
@@ -48,13 +48,13 @@ module.exports = {
   },
 
   // 회원탈퇴_관리자
-  async deleteUser_admin(user_pk) {
+  async deleteUser_admin(login_id) {
     try {
       const user = await db.User.destroy({
-        where: { user_id: user_pk },
+        where: { login_id: login_id },
       });
 
-      return user === 1 ? true : false;
+      return user >= 1 ? true : false;
     } catch (e) {
       console.log(e);
       throw e;
@@ -62,13 +62,13 @@ module.exports = {
   },
 
   // 회원탈퇴 복구_관리자
-  async reStoreUser_admin(user_pk) {
+  async reStoreUser_admin(login_id) {
     try {
       const user = await db.User.restore({
-        where: { user_id: user_pk },
+        where: { login_id: login_id },
       });
 
-      return user === 1 ? true : false;
+      return user >= 1 ? true : false;
     } catch (e) {
       console.log(e);
       throw e;
@@ -76,10 +76,10 @@ module.exports = {
   },
 
   // 관리자 확인
-  async isMaster(user_pk) {
+  async isMaster(master_login_id) {
     try {
       const user = await db.User.findOne({
-        where: { user_id: user_pk },
+        where: { login_id: master_login_id },
       });
 
       if (!user) {
