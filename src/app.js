@@ -1,5 +1,6 @@
 const express = require("express");
 const loader = require("./loaders");
+const http = require("http");
 
 const app = express();
 
@@ -16,3 +17,8 @@ app.get("/", (req, res) => {
 app.listen(PORT, () => {
   console.log("[*] " + app.get("port") + "번 포트에서 대기 중");
 });
+
+/* Prevent Sleep in Heroku Server */
+setInterval(function () {
+  http.get(process.env.SERVER_URL);
+}, 600000); // every 10 minutes
