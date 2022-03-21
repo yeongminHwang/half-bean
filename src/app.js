@@ -3,7 +3,7 @@ const loader = require("./loaders");
 
 const app = express();
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 // Loader불러와서 서버 객체 주입
 loader(app);
 
@@ -13,6 +13,6 @@ app.get("/", (req, res) => {
 });
 
 // 서버 실행
-app.listen(process.env.PORT || PORT, () => {
+app.listen(PORT, () => {
   console.log("[*] " + app.get("port") + "번 포트에서 대기 중");
 });
