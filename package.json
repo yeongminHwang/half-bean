@@ -1,7 +1,7 @@
 {
   "scripts": {
     "nodemon": "nodemon ./src/app.js",
-    "start": "node ./src/app.js",
+    "start": "npm install && node ./src/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
@@ -14,6 +14,9 @@
     "sequelize-cli": "^6.4.1",
     "dotenv": "^16.0.0",
     "nodemon": "^2.0.15"
+  },
+  "engines": {
+    "node": "12.11.1"
   },
   "devDependencies": {
     "dotenv": "^16.0.0",
