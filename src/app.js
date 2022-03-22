@@ -1,6 +1,6 @@
 const express = require("express");
 const loader = require("./loaders");
-const http = require("http");
+const https = require("https");
 
 const app = express();
 
@@ -21,5 +21,5 @@ app.listen(PORT, () => {
 
 /* Prevent Sleep in Heroku Server */
 setInterval(function () {
-  http.get(process.env.SERVER_URL);
+  https.get(process.env.SERVER_URL);
 }, 600000); // every 10 minutes
