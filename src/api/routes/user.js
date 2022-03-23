@@ -79,6 +79,19 @@ module.exports = (app) => {
     }
   });
 
+  // 전체 회원 목록 조회
+  router.get("/all", async (req, res, next) => {
+    try {
+      const user_list = await user_service.findAll_User();
+
+      return res.status(200).json({
+        success: true,
+        response: { count: user_list.length, user_list: user_list },
+      });
+    } catch (e) {
+      res.status(400).json({ success: false, errorMsg: e.message });
+    }
+  });
   //===================================================================================
   // 관리자_회원강제 탈퇴
   router.delete("/admin", async (req, res, next) => {
