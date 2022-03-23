@@ -79,6 +79,20 @@ module.exports = (app) => {
     }
   });
 
+  router.get("/nickname", async (req, res, next) => {
+    try {
+      const nickname = req.body.nickname;
+      const user_list = await user_service.search_By_Nickname(nickname);
+
+      return res.status(200).json({
+        success: true,
+        response: { count: user_list.length, user_list: user_list },
+      });
+    } catch (e) {
+      res.status(400).json({ success: false, errorMsg: e.message });
+    }
+  });
+
   //===================================================================================
   // 관리자_회원강제 탈퇴
   router.delete("/admin", async (req, res, next) => {
