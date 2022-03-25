@@ -79,7 +79,7 @@ module.exports = (app) => {
     }
   });
 
-  router.get("/nickname", async (req, res, next) => {
+  router.get("/admin/nickname", async (req, res, next) => {
     try {
       const nickname = req.body.nickname;
       const user_list = await user_service.search_By_Nickname(nickname);
