@@ -82,7 +82,7 @@ module.exports = (app) => {
 // ===================================================================================
 
   // 관리자_전체 회원 목록 조회
-  router.get("/all", async (req, res, next) => {
+  router.get("/admin/all", async (req, res, next) => {
     try {
       if (req.session.admin && req.session.logined) {
         const user_list = await user_service.findAll_User();
