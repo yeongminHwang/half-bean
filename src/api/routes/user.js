@@ -79,7 +79,11 @@ module.exports = (app) => {
     }
   });
 
-  router.get("/admin/nickname", async (req, res, next) => {
+
+// ===================================================================================
+
+  // 관리자_닉네임으로 회원 목록 조회
+   router.get("/admin/nickname", async (req, res, next) => {
     try {
       const nickname = req.body.nickname;
       const user_list = await user_service.search_By_Nickname(nickname);
@@ -88,12 +92,27 @@ module.exports = (app) => {
         success: true,
         response: { count: user_list.length, user_list: user_list },
       });
+      
+      
+  // 관리자_전체 회원 목록 조회
+  router.get("/admin/all", async (req, res, next) => {
+    try {
+      if (req.session.admin && req.session.logined) {
+        const user_list = await user_service.findAll_User();
+
+        return res.status(200).json({
+          success: true,
+          response: { count: user_list.length, user_list: user_list },
+        });
+      } else {
+        console.log("[-] all 전체 회원 목록 조회 :: 로그인 세션이 존재하지 않거나 관리자가 아닙니다.");
+        return res.status(201).json({ success: false });
+      }
     } catch (e) {
       res.status(400).json({ success: false, errorMsg: e.message });
     }
   });
 
-  //===================================================================================
   // 관리자_회원강제 탈퇴
   router.delete("/admin", async (req, res, next) => {
     //router.delete("/admin", isMaster, async (req, res, next) => {
