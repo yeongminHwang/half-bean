@@ -79,8 +79,21 @@ module.exports = (app) => {
     }
   });
 
+
 // ===================================================================================
 
+  // 관리자_닉네임으로 회원 목록 조회
+   router.get("/admin/nickname", async (req, res, next) => {
+    try {
+      const nickname = req.body.nickname;
+      const user_list = await user_service.search_By_Nickname(nickname);
+
+      return res.status(200).json({
+        success: true,
+        response: { count: user_list.length, user_list: user_list },
+      });
+      
+      
   // 관리자_전체 회원 목록 조회
   router.get("/admin/all", async (req, res, next) => {
     try {

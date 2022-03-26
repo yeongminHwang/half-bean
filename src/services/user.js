@@ -1,4 +1,5 @@
 const db = require("../models");
+const { Op } = require("sequelize");
 
 module.exports = {
   // 회원가입
@@ -75,10 +76,22 @@ module.exports = {
     }
   },
 
+  // 닉네임으로 회원 목록 조회
+  async search_By_Nickname(nickname) {
+    try {
+      let user_list = await db.User.findAll({
+        where: {
+          nickname: {
+            [Op.like]: "%" + nickname + "%",
+          },
+        },
+      });
+
   // 전체 회원 목록 조회
   async findAll_User() {
     try {
       let user_list = await db.User.findAll({});
+
 
       if (user_list) {
         user_list = user_list.map((user) => {
