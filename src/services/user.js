@@ -87,6 +87,19 @@ module.exports = {
         },
       });
 
+      if (user_list) {
+        user_list = user_list.map((user) => {
+          return user.dataValues;
+        });
+      }
+
+      return user_list;
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
+  },
+
   // 전체 회원 목록 조회
   async findAll_User() {
     try {
