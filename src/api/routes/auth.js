@@ -17,9 +17,9 @@ module.exports = (app) => {
   router.post("/login", async (req, res, next) => {
     try {
       const { login_id, password } = req.body;
-
-      if (!req.session.logined) {
-        console.log(req.session.login_id);
+      
+      if (!req.session.logined && !req.header('Cookie')) {
+        //console.log(req.session.login_id);
         // 로그인 id, pw 검증
         const user = await auth_service.login(login_id, password);
 
@@ -29,13 +29,20 @@ module.exports = (app) => {
         if (user.is_master) req.session.admin = true;
         else req.session.admin = false;
 
-        console.log(req.session);
+        //console.log(req.session);
+
         // req.session.save(function() {
         //   console.log('[+] 로그인 세션 생성 성공 ',req.session.logined);
         //   return res.status(200).json({ success: true, response: user });
         // });
         return res.status(200).json({ success: true, response: user });
-      } else {
+      } else if(req.header('Cookie')) {
+        req.session.destroy(function (err) {
+          console.log("[+] 헤더에 세션이 있어서 세션 삭제 성공/ 로그인 실패");
+          return res.status(400).json({ success: false, errorMsg:"세션 만료" });
+        });
+      } else { // req.session.logined 
+        // 사실상 여기는 없어도 될 것 같음
         console.log(
           "[-] 로그인이 이미 되어 있는 거 같은데요",
           req.session.logined
