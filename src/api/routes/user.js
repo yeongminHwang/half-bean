@@ -80,13 +80,18 @@ module.exports = (app) => {
   });
 
   // 다른 회원 정보 조회
-  router.get("/other", async (req, res, next) => {
+  router.get("/:userId", async (req, res, next) => {
     try {
-      const login_id = req.body.login_id;
+      if (req.session.logined) {
+        const userId = req.params.userId;
 
-      const user = await user_service.findOtherUser(login_id);
+        const user = await user_service.findOtherUser(userId);
 
-      return res.status(200).json({ success: true, response: user });
+        return res.status(200).json({ success: true, response: user });
+      } else {
+        console.log("[-] 다른 회원 정보 조회 :: 로그인 세션이 존재하지 않습니다.");
+        return res.status(201).json({ success: false });
+      }
     } catch (e) {
       res.status(400).json({ success: false, errorMsg: e.message });
     }

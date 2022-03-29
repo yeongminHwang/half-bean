@@ -49,13 +49,16 @@ module.exports = {
   },
 
   // 다른 회원 정보 조회
-  async findOtherUser(login_id) {
+  async findOtherUser(userId) {
     try {
-      const user = await db.User.findOne({ where: { login_id: login_id } });
-
+      const user = await db.User.findOne({ where: { user_Id: userId } });
+      console.log(user.is_master);
       if (!user) {
         throw new Error("다른 회원 정보 조회 에러");
-      } else {
+      } else if (user.is_master) {
+        throw new Error("관리자 계정 조회 금지");
+      }
+      else {
         return user.dataValues;
       }
     } catch (e) {
