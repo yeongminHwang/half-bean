@@ -79,11 +79,23 @@ module.exports = (app) => {
     }
   });
 
+  // 다른 회원 정보 조회
+  router.get("/other", async (req, res, next) => {
+    try {
+      const login_id = req.body.login_id;
 
-// ===================================================================================
+      const user = await user_service.findOtherUser(login_id);
+
+      return res.status(200).json({ success: true, response: user });
+    } catch (e) {
+      res.status(400).json({ success: false, errorMsg: e.message });
+    }
+  });
+
+  // ===================================================================================
 
   // 관리자_닉네임으로 회원 목록 조회
-   router.get("/admin/nickname", async (req, res, next) => {
+  router.get("/admin/nickname", async (req, res, next) => {
     try {
       if (req.session.admin && req.session.logined) {
         const nickname = req.body.nickname;
@@ -94,14 +106,16 @@ module.exports = (app) => {
           response: { count: user_list.length, user_list: user_list },
         });
       } else {
-        console.log("[-] 닉네임 회원 목록 조회 :: 로그인 세션이 존재하지 않거나 관리자가 아닙니다.");
+        console.log(
+          "[-] 닉네임 회원 목록 조회 :: 로그인 세션이 존재하지 않거나 관리자가 아닙니다."
+        );
         return res.status(201).json({ success: false });
       }
     } catch (e) {
       res.status(400).json({ success: false, errorMsg: e.message });
     }
   });
-      
+
   // 관리자_전체 회원 목록 조회
   router.get("/admin/all", async (req, res, next) => {
     try {
@@ -113,7 +127,9 @@ module.exports = (app) => {
           response: { count: user_list.length, user_list: user_list },
         });
       } else {
-        console.log("[-] all 전체 회원 목록 조회 :: 로그인 세션이 존재하지 않거나 관리자가 아닙니다.");
+        console.log(
+          "[-] all 전체 회원 목록 조회 :: 로그인 세션이 존재하지 않거나 관리자가 아닙니다."
+        );
         return res.status(201).json({ success: false });
       }
     } catch (e) {
