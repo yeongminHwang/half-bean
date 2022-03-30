@@ -80,7 +80,6 @@ module.exports = (app) => {
   });
 
   // 다른 회원 정보 조회
-  // 관리자_회원 정보 조회
   router.get("/:userId", async (req, res, next) => {
     try {
       if (req.session.logined) {
