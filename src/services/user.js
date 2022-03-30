@@ -48,6 +48,25 @@ module.exports = {
     }
   },
 
+  // 다른 회원 정보 조회
+  async findOtherUser(userId) {
+    try {
+      const user = await db.User.findOne({ where: { user_Id: userId } });
+      console.log(user.is_master);
+      if (!user) {
+        throw new Error("다른 회원 정보 조회 에러");
+      } else if (user.is_master) {
+        throw new Error("관리자 계정 조회 금지");
+      }
+      else {
+        return user.dataValues;
+      }
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
+  },
+
   // 회원탈퇴_관리자
   async deleteUser_admin(login_id) {
     try {
@@ -104,7 +123,6 @@ module.exports = {
   async findAll_User() {
     try {
       let user_list = await db.User.findAll({});
-
 
       if (user_list) {
         user_list = user_list.map((user) => {
