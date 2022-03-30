@@ -14,6 +14,29 @@ module.exports = {
     }
   },
 
+  // 나의 정보 조회
+  async readUser(login_id) {
+    try {
+      const user = await db.User.findOne({ where: { login_id: login_id } });
+
+      if (!user) {
+        // deleteAt에 데이터 채워질 시 !user는 true가 되어 여기로 잘 들어옴
+        throw new Error("나의 정보 조회 에러");
+      } else {
+        // 민감 정보 삭제
+        delete user.dataValues.password;
+        delete user.dataValues.is_master;
+        delete user.dataValues.updatedAt; 
+        delete user.dataValues.deletedAt; 
+
+        return user.dataValues;
+      }
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
+  },
+
   // 회원정보 수정
   async updateUser(login_id, userInput) {
     try {

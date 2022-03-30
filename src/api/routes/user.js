@@ -35,6 +35,26 @@ module.exports = (app) => {
     }
   });
 
+  // 내 정보 조회
+  router.get("/status", async (req, res, next) => {
+    try {
+      if (req.session.logined) {
+        const login_id = req.session.login_id;
+        console.log(login_id);
+        const user = await user_service.readUser(login_id);
+
+        return res.status(200).json({ success: true, response: user });
+      } else {
+        console.log("[-] 내 정보 조회 :: 로그인 세션이 존재하지 않습니다.");
+        return res.status(201).json({ success: false });
+      }
+    } catch (e) {
+      res.status(400).json({ success: false, errorMsg: e.message });
+    }
+  });
+
+
+
   // 회원정보 수정
   // 세션 관리 완
   router.post("/update", async (req, res, next) => {
