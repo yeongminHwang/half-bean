@@ -1,5 +1,6 @@
 const db = require("../models");
 const { Op } = require("sequelize");
+const { login } = require("./auth");
 
 module.exports = {
   // 회원가입
@@ -52,13 +53,19 @@ module.exports = {
   async findOtherUser(userId) {
     try {
       const user = await db.User.findOne({ where: { user_Id: userId } });
-      console.log(user.is_master);
+
       if (!user) {
+        // deleteAt에 데이터 채워질 시 !user는 true가 되어 여기로 잘 들어옴
         throw new Error("다른 회원 정보 조회 에러");
       } else if (user.is_master) {
         throw new Error("관리자 계정 조회 금지");
-      }
-      else {
+      } else {
+        // 민감 정보 삭제
+        delete user.dataValues.password;
+        delete user.dataValues.is_master;
+        delete user.dataValues.updatedAt; 
+        delete user.dataValues.deletedAt; 
+
         return user.dataValues;
       }
     } catch (e) {
@@ -67,6 +74,28 @@ module.exports = {
     }
   },
 
+  
+    // 회원 정보 조회_관리자
+    async findUser_admin(userId) {
+      try {
+        const user = await db.User.findOne({ where: { user_Id: userId } });
+        // 민감 정보 삭제
+        delete user.dataValues.password;
+
+        if (!user) {
+          throw new Error("회원 정보 조회 에러");
+        } else {
+          return user.dataValues;
+        }
+      } catch (e) {
+        console.log(e);
+        throw e;
+      }
+    },
+
+    
+
+  
   // 회원탈퇴_관리자
   async deleteUser_admin(login_id) {
     try {
