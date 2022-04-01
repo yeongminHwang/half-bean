@@ -26,6 +26,7 @@ module.exports = (app) => {
         // 세션 저장
         req.session.login_id = login_id;
         req.session.logined = true;
+        req.session.user_id = user.user_id;
         if (user.is_master) req.session.admin = true;
         else req.session.admin = false;
 
