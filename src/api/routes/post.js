@@ -37,6 +37,7 @@ module.exports = (app) => {
   });
 
   // 상품 상세 조회
+  // TODO: nickname과 area도 response 받아야 함 (설계 ui보니.. 받아와야할 것 같음)
   router.get("/:postId", async (req, res, next) => {
     try {
       const post_id = req.params.postId;
