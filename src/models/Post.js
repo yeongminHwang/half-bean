@@ -28,21 +28,25 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
         comment: "조회수",
+        defaultValue: 0,
       },
       blame_count: {
         type: DataTypes.INTEGER,
         allowNull: false,
         comment: "게시글이 신고당한 횟수",
+        defaultValue: 0,
       },
       visual_open: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         comment: "게시글 숨김 처리",
+        defaultValue: true,
       },
       ishurry: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         comment: "긴급게시글 유무",
+        defaultValue: false,
       },
       image: {
         type: DataTypes.BLOB("long"),
