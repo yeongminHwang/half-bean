@@ -44,7 +44,7 @@ module.exports = (app) => {
         });
       } 
       */
-      else if (req.session.logined && req.session.login_id === login_id && user.password === password) { 
+      else if (req.session.logined || (req.session.login_id === login_id && user.password === password)) { 
         //console.log(req.session);
         console.log(
           "[-] 로그인이 이미 되어 있음",
@@ -69,15 +69,15 @@ module.exports = (app) => {
         // 세션 삭제 ㄲ
         req.session.destroy(function (err) {
           console.log("[+] 세션 삭제 성공");
-          return res.status(200).json({ success: true });
+          return res.status(200).json({ success: true, errorMsg: '로그아웃 성공' });
         });
       } else {
         console.log("[-] 로그인 안되어 있음 ㅇㅅㅇ", req.session.logined);
-        return res.status(200).json({ success: true });
+        return res.status(200).json({ success: false, errorMsg: '로그인 안되어 있음' });
       }
     } catch (e) {
       console.log(e);
-      res.status(400).json({ success: false });
+      res.status(400).json({ success: false,  errorMsg: e.message });
     }
   });
 
