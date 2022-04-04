@@ -17,10 +17,9 @@ module.exports = (app) => {
   router.post("/login", async (req, res, next) => {
     try {
       const { login_id, password } = req.body;
+      const user = await auth_service.login(login_id, password); // 로그인 id, pw 검증
       if (!req.session.logined ) { //&& !req.header('Cookie')) {
         //console.log(req.session.login_id);
-        // 로그인 id, pw 검증
-        const user = await auth_service.login(login_id, password);
 
         // 세션 저장
         req.session.login_id = login_id;
@@ -45,12 +44,15 @@ module.exports = (app) => {
         });
       } 
       */
-      else { // req.session.logined 
+      else if (req.session.logined && req.session.login_id === login_id && user.password === password) { 
+        //console.log(req.session);
         console.log(
-          "[-] 로그인이 이미 되어 있는 거 같은데요",
+          "[-] 로그인이 이미 되어 있음",
           req.session.logined
         );
-        return res.status(200).json({ success: true });
+        return res.status(200).json({ success: true, errorMsg: '중복 로그인' });
+      } else {
+        res.status(400).json({ success: false, errorMsg: '로그인 실패' });
       }
     } catch (e) {
       console.log(e);
