@@ -32,15 +32,37 @@ module.exports = (app) => {
         const user_id = req.session.user_id;
         const post_id = req.params.postId;
         const postInfo = req.body.modification;
-        console.log(post_id)
+        console.log(post_id);
 
-        const update_result = await post_service.updatePost(user_id, post_id, postInfo);
+        const update_result = await post_service.updatePost(
+          user_id,
+          post_id,
+          postInfo
+        );
 
         return res.status(200).json({ success: true, response: update_result });
       } else {
         console.log("[-] 로그인 세션이 존재하지 않습니다.");
         return res.status(201).json({ success: false, response: req.session });
       }
+    } catch (e) {
+      res.status(400).json({ success: false, errorMsg: e.message });
+    }
+  });
+
+  // 내가 등록한 상품 조회
+  router.get("/mypost", async (req, res, next) => {
+    try {
+      const user_id = req.body.user_id;
+
+      const posts = await post_service.findMyPosts(user_id);
+
+      return res
+        .status(200)
+        .json({
+          success: true,
+          response: { count: posts.length, posts: posts },
+        });
     } catch (e) {
       res.status(400).json({ success: false, errorMsg: e.message });
     }
