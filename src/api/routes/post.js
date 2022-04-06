@@ -1,4 +1,6 @@
 const { Router } = require("express");
+const { route } = require("express/lib/application");
+const post = require("../../services/post");
 const post_service = require("../../services/post");
 
 const router = Router();
@@ -32,9 +34,13 @@ module.exports = (app) => {
         const user_id = req.session.user_id;
         const post_id = req.params.postId;
         const postInfo = req.body.modification;
-        console.log(post_id)
+        console.log(post_id);
 
-        const update_result = await post_service.updatePost(user_id, post_id, postInfo);
+        const update_result = await post_service.updatePost(
+          user_id,
+          post_id,
+          postInfo
+        );
 
         return res.status(200).json({ success: true, response: update_result });
       } else {
@@ -79,6 +85,22 @@ module.exports = (app) => {
         console.log("[-] 로그인 세션이 존재하지 않습니다.");
         return res.status(201).json({ success: false, response: req.session });
       }
+    } catch (e) {
+      res.status(400).json({ success: false, errorMsg: e.message });
+    }
+  });
+
+  // 기능별 전체 상품 조회
+  router.get("/", async (req, res, next) => {
+    try {
+      const category = req.query.category;
+
+      const posts = await post_service.findPost_by_category(category);
+
+      return res.status(200).json({
+        success: true,
+        response: { count: posts.length, posts: posts },
+      });
     } catch (e) {
       res.status(400).json({ success: false, errorMsg: e.message });
     }
