@@ -1,5 +1,6 @@
 const { Router } = require("express");
 const auth_service = require("../../services/auth");
+const user = require("../../services/user");
 const user_service = require("../../services/user");
 
 const router = Router();
@@ -18,44 +19,31 @@ module.exports = (app) => {
     try {
       const { login_id, password } = req.body;
       const user = await auth_service.login(login_id, password); // 로그인 id, pw 검증
-      if (!req.session.logined ) { //&& !req.header('Cookie')) {
-        //console.log(req.session.login_id);
 
-        // 세션 저장
-        req.session.login_id = login_id;
-        req.session.logined = true;
-        req.session.user_id = user.user_id;
-        if (user.is_master) req.session.admin = true;
-        else req.session.admin = false;
-
-        //console.log(req.session);
-
-        // req.session.save(function() {
-        //   console.log('[+] 로그인 세션 생성 성공 ',req.session.logined);
-        //   return res.status(200).json({ success: true, response: user });
-        // });
-        return res.status(200).json({ success: true, response: user });
-      } 
-      /*
-      else if(req.header('Cookie')) {
-        req.session.destroy(function (err) {
-          console.log("[+] 헤더에 세션이 있어서 세션 삭제 성공/ 로그인 실패");
-          return res.status(400).json({ success: false, errorMsg:"세션 만료" });
-        });
-      } 
-      */
-      else if (req.session.logined || (req.session.login_id === login_id && user.password === password)) { 
-        //console.log(req.session);
-        console.log(
-          "[-] 로그인이 이미 되어 있음",
-          req.session.logined
-        );
-        return res.status(200).json({ success: true, errorMsg: '중복 로그인' });
-      } else {
-        res.status(400).json({ success: false, errorMsg: '로그인 실패' });
+      // 현재 접속중인 유저정보 담을 배열 생성
+      if (!req.session.users) {
+        req.session.users = [];
       }
+
+      // 세션 내 동일 유저 검사 by 로그인 아이디
+      let isLogined = false;
+      for (var i = 0; i < req.session.users.length; i++) {
+        if (req.session.users[i].login_id === user.dataValues.login_id) {
+          isLogined = true;
+          break;
+        }
+      }
+
+      // 로그인 되어있지 않은 유저만 세션에 넣도록
+      if (!isLogined) {
+        req.session.users.push(user.dataValues);
+      }
+
+      console.log(req.session);
+      console.log("현재접속인원 : ", req.session.users.length);
+
+      return res.status(200).json({ success: true, response: user });
     } catch (e) {
-      console.log(e);
       res.status(400).json({ success: false, errorMsg: e.message });
     }
   });
@@ -64,20 +52,21 @@ module.exports = (app) => {
   // 로그아웃 할 때 세션 파괴
   router.post("/logout", async (req, res, next) => {
     try {
-      if (req.session.logined) {
-        console.log(req.session.login_id);
-        // 세션 삭제 ㄲ
-        req.session.destroy(function (err) {
-          console.log("[+] 세션 삭제 성공");
-          return res.status(200).json({ success: true, errorMsg: '로그아웃 성공' });
-        });
-      } else {
-        console.log("[-] 로그인 안되어 있음 ㅇㅅㅇ", req.session.logined);
-        return res.status(200).json({ success: false, errorMsg: '로그인 안되어 있음' });
+      const login_id = req.body.login_id;
+
+      // 세션에서 로그인 아이디 찾아서 제거
+      for (var i = 0; i < req.session.users.length; i++) {
+        if (req.session.users[i].login_id === login_id) {
+          req.session.users.splice(i, 1);
+          break;
+        }
       }
+
+      console.log("현재접속인원 : ", req.session.users.length);
+
+      return res.status(200).json({ success: true });
     } catch (e) {
-      console.log(e);
-      res.status(400).json({ success: false,  errorMsg: e.message });
+      res.status(400).json({ success: false, errorMsg: e.message });
     }
   });
 
@@ -90,7 +79,6 @@ module.exports = (app) => {
 
       return res.status(200).json({ success: true, response: isDouble });
     } catch (e) {
-      console.log(e);
       res.status(400).json({ success: false, errorMsg: e.message });
     }
   });
@@ -114,7 +102,6 @@ module.exports = (app) => {
 
       return res.status(200).json({ success: true, response: { messageId } });
     } catch (e) {
-      console.log(e);
       res.status(400).json({ success: false, errorMsg: e.message });
     }
   });
@@ -132,7 +119,6 @@ module.exports = (app) => {
         response: { isVerify: isVerify },
       });
     } catch (e) {
-      console.log(e);
       res.status(400).json({ success: false, errorMsg: e.message });
     }
   });
@@ -149,7 +135,6 @@ module.exports = (app) => {
 
       return res.status(200).json({ success: true, response: user });
     } catch (e) {
-      console.log(e);
       res.status(400).json({ success: false, errorMsg: e.message });
     }
   });
