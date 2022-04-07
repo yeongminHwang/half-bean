@@ -56,4 +56,16 @@ module.exports = {
       throw e;
     }
   },
+
+  // 닉네임 중복 확인
+  async doubleCheckNickName(nickname) {
+    try {
+      const isDouble = await db.User.findOne({ where: { nickname: nickname } });
+
+      return { isDouble: isDouble === null ? false : true };
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
+  },
 };
