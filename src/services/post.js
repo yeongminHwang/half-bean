@@ -4,11 +4,11 @@ module.exports = {
   // 상품 등록
   async createPost(user_id, postInfo) {
     try {
-      const user = { user_id : user_id };
+      const user = { user_id: user_id };
       const postInfo_ = {
         ...postInfo,
-        ...user
-      }
+        ...user,
+      };
       const { dataValues: post } = await db.Post.create({ ...postInfo_ });
 
       return post;
@@ -23,10 +23,10 @@ module.exports = {
     try {
       console.log(user_id);
       console.log(post_id);
-      
+
       const uu = await db.Post.update(
         { ...postInfo },
-        { where: { user_id: user_id, post_id: post_id} }
+        { where: { user_id: user_id, post_id: post_id } }
       );
 
       if (!uu[0]) {
@@ -68,6 +68,20 @@ module.exports = {
       });
 
       return post >= 1 ? true : false;
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
+  },
+
+  // 기능별 전체 상품 조회
+  async findPost_by_category(category) {
+    try {
+      const posts = await db.Post.findAll({
+        where: { category: category },
+      });
+
+      return posts;
     } catch (e) {
       console.log(e);
       throw e;
