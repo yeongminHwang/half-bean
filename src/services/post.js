@@ -51,8 +51,25 @@ module.exports = {
       const { dataValues: post } = await db.Post.findOne({
         where: { post_id: post_id },
       });
+      const user_id = post.user_id;
+      console.log(user_id)
 
-      return post;
+      const { dataValues: user } = await db.User.findOne({
+        where: { user_id: user_id },
+      });
+      
+      // 민감 정보 삭제
+      delete user.password;
+      delete user.is_master;
+      delete user.updatedAt; 
+      delete user.deletedAt; 
+
+      var data = new Object();
+      data.user = user;
+      data.post = post;
+      //console.log(data);
+      
+      return data;
     } catch (e) {
       console.log(e);
       throw e;
