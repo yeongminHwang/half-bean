@@ -87,4 +87,16 @@ module.exports = {
       throw e;
     }
   },
+
+  // 내가 등록한 상품 조회
+  async findMyPosts(user_id) {
+    try {
+      const posts = await db.Post.findAll({ where: { user_id: user_id } });
+
+      return posts;
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
+  },
 };
