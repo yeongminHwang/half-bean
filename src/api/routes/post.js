@@ -14,9 +14,9 @@ module.exports = (app) => {
       if (req.session.logined) {
         const user_id = req.session.user_id;
         const postInfo = req.body;
-        const post = await post_service.createPost(user_id, postInfo);
+        const data = await post_service.createPost(user_id, postInfo);
 
-        return res.status(201).json({ success: true, response: post });
+        return res.status(201).json({ success: true, response: data });
       } else {
         console.log("[-] 로그인 세션이 존재하지 않습니다.");
         return res.status(201).json({ success: false, response: req.session });
