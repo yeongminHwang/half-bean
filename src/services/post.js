@@ -52,23 +52,23 @@ module.exports = {
         where: { post_id: post_id },
       });
       const user_id = post.user_id;
-      console.log(user_id)
+      console.log(user_id);
 
       const { dataValues: user } = await db.User.findOne({
         where: { user_id: user_id },
       });
-      
+
       // 민감 정보 삭제
       delete user.password;
       delete user.is_master;
-      delete user.updatedAt; 
-      delete user.deletedAt; 
+      delete user.updatedAt;
+      delete user.deletedAt;
 
       var data = new Object();
       data.user = user;
       data.post = post;
       //console.log(data);
-      
+
       return data;
     } catch (e) {
       console.log(e);
@@ -113,6 +113,27 @@ module.exports = {
       return posts;
     } catch (e) {
       console.log(e);
+      throw e;
+    }
+  },
+
+  // 내가 찜한 상품 조회
+  async findMyWishList(user_id) {
+    try {
+      let posts = await db.User_like_Post.findAll({
+        where: { user_id: user_id },
+        include: db.Post,
+        attributes: [],
+      });
+
+      if (posts) {
+        posts = posts.map((post) => {
+          return post.Post;
+        });
+      }
+
+      return posts;
+    } catch (e) {
       throw e;
     }
   },
