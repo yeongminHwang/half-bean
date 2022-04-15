@@ -137,4 +137,42 @@ module.exports = {
       throw e;
     }
   },
+      
+  // 상품 찜
+  async wishPost(user_id, post_id) {
+    try {
+      const isExisted = await db.User_like_Post.findOne({
+        where: {
+          user_id: user_id,
+          post_id: post_id,
+        },
+      });
+      if (isExisted) {
+        throw new Error("이미 찜한 상품입니다");
+      }
+
+      const { dataValues: wish } = await db.User_like_Post.create({
+        user_id: user_id,
+        post_id: post_id,
+      });
+
+      return wish;
+    } catch (e) {
+      throw e;
+    }
+  },
+
+  // 상품찜 취소
+  async cancleWishPost(user_id, post_id) {
+    try {
+      const post = await db.User_like_Post.destroy({
+        where: { user_id: user_id, post_id: post_id },
+        force: true,
+      });
+
+      return post >= 1 ? true : false;
+    } catch (e) {
+      throw e;
+    }
+  },
 };

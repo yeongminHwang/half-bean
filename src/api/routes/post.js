@@ -106,6 +106,36 @@ module.exports = (app) => {
     }
   });
 
+  // 상품 찜
+  router.post("/wishlist", async (req, res, next) => {
+    try {
+      const user_id = req.body.user_id;
+      const post_id = req.body.post_id;
+
+      const wish = await post_service.wishPost(user_id, post_id);
+
+      return res.status(200).json({ success: true, response: wish });
+    } catch (e) {
+      res.status(400).json({ success: false, errorMsg: e.name });
+    }
+  });
+
+  // 상품 찜 취소
+  router.delete("/wishlist", async (req, res, next) => {
+    try {
+      const user_id = req.body.user_id;
+      const post_id = req.body.post_id;
+
+      const isCancled = await post_service.cancleWishPost(user_id, post_id);
+
+      return res
+        .status(isCancled ? 200 : 400)
+        .json({ success: isCancled, response: { isCancled: isCancled } });
+    } catch (e) {
+      res.status(400).json({ success: false, errorMsg: e.name });
+    }
+  });
+
   // 상품 삭제
   router.delete("/:postId", async (req, res, next) => {
     try {
