@@ -188,8 +188,8 @@ module.exports = {
       throw e;
     }
   },
+  
   // 관리자 확인
-  /*
   async isMaster(master_login_id) {
     try {
       const user = await db.User.findOne({
@@ -206,5 +206,5 @@ module.exports = {
       throw e;
     }
   },
-  */
+
 };

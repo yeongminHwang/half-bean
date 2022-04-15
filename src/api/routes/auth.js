@@ -18,42 +18,9 @@ module.exports = (app) => {
     try {
       const { login_id, password } = req.body;
       const user = await auth_service.login(login_id, password); // 로그인 id, pw 검증
-      if (!req.session.logined) {
-        //&& !req.header('Cookie')) {
-        //console.log(req.session.login_id);
-
-        // 세션 저장
-        req.session.login_id = login_id;
-        req.session.logined = true;
-        req.session.user_id = user.user_id;
-        if (user.is_master) req.session.admin = true;
-        else req.session.admin = false;
-
-        //console.log(req.session);
-
-        // req.session.save(function() {
-        //   console.log('[+] 로그인 세션 생성 성공 ',req.session.logined);
-        //   return res.status(200).json({ success: true, response: user });
-        // });
-        return res.status(200).json({ success: true, response: user });
-      } else if (
-        /*
-      else if(req.header('Cookie')) {
-        req.session.destroy(function (err) {
-          console.log("[+] 헤더에 세션이 있어서 세션 삭제 성공/ 로그인 실패");
-          return res.status(400).json({ success: false, errorMsg:"세션 만료" });
-        });
-      } 
-      */
-        req.session.logined ||
-        (req.session.login_id === login_id && user.password === password)
-      ) {
-        //console.log(req.session);
-        console.log("[-] 로그인이 이미 되어 있음", req.session.logined);
-        return res.status(200).json({ success: true, errorMsg: "중복 로그인" });
-      } else {
-        res.status(400).json({ success: false, errorMsg: "로그인 실패" });
-      }
+      
+      return res.status(200).json({ success: true, response: user });
+      
     } catch (e) {
       console.log(e);
       res.status(400).json({ success: false, errorMsg: e.message });
@@ -64,21 +31,11 @@ module.exports = (app) => {
   // 로그아웃 할 때 세션 파괴
   router.post("/logout", async (req, res, next) => {
     try {
-      if (req.session.logined) {
-        console.log(req.session.login_id);
-        // 세션 삭제 ㄲ
-        req.session.destroy(function (err) {
-          console.log("[+] 세션 삭제 성공");
-          return res
-            .status(200)
-            .json({ success: true, errorMsg: "로그아웃 성공" });
-        });
-      } else {
-        console.log("[-] 로그인 안되어 있음 ㅇㅅㅇ", req.session.logined);
-        return res
-          .status(200)
-          .json({ success: false, errorMsg: "로그인 안되어 있음" });
-      }
+      console.log(req.session.login_id);
+
+      return res
+        .status(200)
+        .json({ success: true, errorMsg: "로그아웃 성공" });
     } catch (e) {
       console.log(e);
       res.status(400).json({ success: false, errorMsg: e.message });
