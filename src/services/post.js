@@ -117,6 +117,27 @@ module.exports = {
     }
   },
 
+  // 내가 찜한 상품 조회
+  async findMyWishList(user_id) {
+    try {
+      let posts = await db.User_like_Post.findAll({
+        where: { user_id: user_id },
+        include: db.Post,
+        attributes: [],
+      });
+
+      if (posts) {
+        posts = posts.map((post) => {
+          return post.Post;
+        });
+      }
+
+      return posts;
+    } catch (e) {
+      throw e;
+    }
+  },
+      
   // 상품 찜
   async wishPost(user_id, post_id) {
     try {

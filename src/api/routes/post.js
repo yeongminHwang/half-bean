@@ -1,6 +1,4 @@
 const { Router } = require("express");
-const { route } = require("express/lib/application");
-const post = require("../../services/post");
 const post_service = require("../../services/post");
 
 const router = Router();
@@ -69,6 +67,22 @@ module.exports = (app) => {
         console.log("[-] 로그인 세션이 존재하지 않습니다.");
         return res.status(201).json({ success: false, response: req.session });
       }
+    } catch (e) {
+      res.status(400).json({ success: false, errorMsg: e.message });
+    }
+  });
+
+  // 내가 찜한 상품 조회
+  router.get("/mywishlist", async (req, res, next) => {
+    try {
+      const user_id = req.body.user_id;
+
+      const posts = await post_service.findMyWishList(user_id);
+
+      return res.status(200).json({
+        success: true,
+        response: { count: posts.length, posts: posts },
+      });
     } catch (e) {
       res.status(400).json({ success: false, errorMsg: e.message });
     }
