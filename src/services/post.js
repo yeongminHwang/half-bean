@@ -52,23 +52,23 @@ module.exports = {
         where: { post_id: post_id },
       });
       const user_id = post.user_id;
-      console.log(user_id)
+      console.log(user_id);
 
       const { dataValues: user } = await db.User.findOne({
         where: { user_id: user_id },
       });
-      
+
       // 민감 정보 삭제
       delete user.password;
       delete user.is_master;
-      delete user.updatedAt; 
-      delete user.deletedAt; 
+      delete user.updatedAt;
+      delete user.deletedAt;
 
       var data = new Object();
       data.user = user;
       data.post = post;
       //console.log(data);
-      
+
       return data;
     } catch (e) {
       console.log(e);
@@ -113,6 +113,44 @@ module.exports = {
       return posts;
     } catch (e) {
       console.log(e);
+      throw e;
+    }
+  },
+
+  // 상품 찜
+  async wishPost(user_id, post_id) {
+    try {
+      const isExisted = await db.User_like_Post.findOne({
+        where: {
+          user_id: user_id,
+          post_id: post_id,
+        },
+      });
+      if (isExisted) {
+        throw new Error("이미 찜한 상품입니다");
+      }
+
+      const { dataValues: wish } = await db.User_like_Post.create({
+        user_id: user_id,
+        post_id: post_id,
+      });
+
+      return wish;
+    } catch (e) {
+      throw e;
+    }
+  },
+
+  // 상품찜 취소
+  async cancleWishPost(user_id, post_id) {
+    try {
+      const post = await db.User_like_Post.destroy({
+        where: { user_id: user_id, post_id: post_id },
+        force: true,
+      });
+
+      return post >= 1 ? true : false;
+    } catch (e) {
       throw e;
     }
   },

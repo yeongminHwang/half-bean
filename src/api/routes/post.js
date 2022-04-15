@@ -61,12 +61,10 @@ module.exports = (app) => {
 
         const posts = await post_service.findMyPosts(user_id);
 
-        return res
-          .status(200)
-          .json({
-            success: true,
-            response: { count: posts.length, posts: posts },
-          });
+        return res.status(200).json({
+          success: true,
+          response: { count: posts.length, posts: posts },
+        });
       } else {
         console.log("[-] 로그인 세션이 존재하지 않습니다.");
         return res.status(201).json({ success: false, response: req.session });
@@ -91,6 +89,36 @@ module.exports = (app) => {
       }
     } catch (e) {
       res.status(400).json({ success: false, errorMsg: e.message });
+    }
+  });
+
+  // 상품 찜
+  router.post("/wishlist", async (req, res, next) => {
+    try {
+      const user_id = req.body.user_id;
+      const post_id = req.body.post_id;
+
+      const wish = await post_service.wishPost(user_id, post_id);
+
+      return res.status(200).json({ success: true, response: wish });
+    } catch (e) {
+      res.status(400).json({ success: false, errorMsg: e.name });
+    }
+  });
+
+  // 상품 찜 취소
+  router.delete("/wishlist", async (req, res, next) => {
+    try {
+      const user_id = req.body.user_id;
+      const post_id = req.body.post_id;
+
+      const isCancled = await post_service.cancleWishPost(user_id, post_id);
+
+      return res
+        .status(isCancled ? 200 : 400)
+        .json({ success: isCancled, response: { isCancled: isCancled } });
+    } catch (e) {
+      res.status(400).json({ success: false, errorMsg: e.name });
     }
   });
 
