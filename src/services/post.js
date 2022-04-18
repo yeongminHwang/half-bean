@@ -137,7 +137,7 @@ module.exports = {
       throw e;
     }
   },
-      
+
   // 상품 찜
   async wishPost(user_id, post_id) {
     try {
@@ -171,6 +171,23 @@ module.exports = {
       });
 
       return post >= 1 ? true : false;
+    } catch (e) {
+      throw e;
+    }
+  },
+
+  async plus_hit(post_id) {
+    try {
+      const isUpdate = await db.Post.increment("hit", {
+        by: 1,
+        where: { post_id: post_id },
+      });
+
+      if (!isUpdate[0][1]) {
+        throw new Error("조회수 증가 에러");
+      }
+
+      return true;
     } catch (e) {
       throw e;
     }
