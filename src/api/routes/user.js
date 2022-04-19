@@ -1,28 +1,11 @@
 const { Router } = require("express");
 const user_service = require("../../services/user");
-const { isMaster } = require("./middlewares");
 
 const router = Router();
 
 module.exports = (app) => {
   // ***/api/user 로 들어오는 요청 처리 담당
   app.use("/user", router);
-
-  // session check test
-  router.get("/test", async (req, res, next) => {
-    try {
-      if (req.session.logined) {
-        console.log("[+] 로그인 세션이 존재합니다. (로긴되어잇음)");
-        return res.status(200).json({ success: true, response: req.session });
-      } else {
-        console.log("[-] 로그인 세션이 존재하지 않습니다.");
-        return res.status(201).json({ success: false, response: req.session });
-      }
-    } catch (e) {
-      console.log("[!]");
-      res.status(400).json({ success: false });
-    }
-  });
 
   // 회원가입
   router.post("/", async (req, res, next) => {
@@ -36,64 +19,41 @@ module.exports = (app) => {
   });
 
   // 내 정보 조회
-  router.get("/status", async (req, res, next) => {
+  router.post("/status", async (req, res, next) => {
     try {
-      if (req.session.logined) {
-        const login_id = req.session.login_id;
-        console.log(login_id);
-        const user = await user_service.readUser(login_id);
+      const login_id = req.body.login_id;
+      console.log(login_id);
+      const user = await user_service.readUser(login_id);
 
-        return res.status(200).json({ success: true, response: user });
-      } else {
-        console.log("[-] 내 정보 조회 :: 로그인 세션이 존재하지 않습니다.");
-        return res.status(201).json({ success: false });
-      }
+      return res.status(200).json({ success: true, response: user });
     } catch (e) {
       res.status(400).json({ success: false, errorMsg: e.message });
     }
   });
 
-
-
   // 회원정보 수정
-  // 세션 관리 완
   router.post("/update", async (req, res, next) => {
     try {
-      if (req.session.logined) {
-        const login_id = req.session.login_id;
-        const userInput = req.body.modification;
-        //console.log(login_id);
+      const login_id = req.body.login_id;
+      const userInput = req.body.modification;
 
-        const user = await user_service.updateUser(login_id, userInput);
+      const user = await user_service.updateUser(login_id, userInput);
 
-        return res.status(200).json({ success: true, response: user });
-      } else {
-        console.log("[-] /update :: 로그인 세션이 존재하지 않습니다.");
-        return res.status(201).json({ success: false });
-      }
+      return res.status(200).json({ success: true, response: user });
     } catch (e) {
       res.status(400).json({ success: false, errorMsg: e.message });
     }
   });
 
   // 회원 탈퇴
-  // 세션 관리 완
-  //router.post("/delete", async (req, res, next) => {
   router.delete("/", async (req, res, next) => {
     try {
-      if (req.session.logined) {
-        const login_id = req.session.login_id;
-        //console.log(login_id);
+      const login_id = req.body.login_id;
+      const isDeleted = await user_service.deleteUser(login_id);
 
-        const isDeleted = await user_service.deleteUser(login_id);
-
-        return res
-          .status(isDeleted ? 200 : 400)
-          .json({ success: isDeleted, response: { isDeleted: isDeleted } });
-      } else {
-        console.log("[-] delete :: 로그인 세션이 존재하지 않습니다.");
-        return res.status(201).json({ success: false });
-      }
+      return res
+        .status(isDeleted ? 200 : 400)
+        .json({ success: isDeleted, response: { isDeleted: isDeleted } });
     } catch (e) {
       res.status(400).json({ success: false, errorMsg: e.message });
     }
@@ -102,15 +62,10 @@ module.exports = (app) => {
   // 다른 회원 정보 조회
   router.get("/:userId", async (req, res, next) => {
     try {
-      if (req.session.logined) {
-        const userId = req.params.userId;
-        const user = await user_service.findOtherUser(userId);
+      const userId = req.params.userId;
+      const user = await user_service.findOtherUser(userId);
 
-        return res.status(200).json({ success: true, response: user });
-      } else {
-        console.log("[-] 다른 회원 정보 조회 :: 로그인 세션이 존재하지 않습니다.");
-        return res.status(201).json({ success: false });
-      }
+      return res.status(200).json({ success: true, response: user });
     } catch (e) {
       res.status(400).json({ success: false, errorMsg: e.message });
     }
@@ -120,36 +75,25 @@ module.exports = (app) => {
   // 관리자_회원 정보 조회
   router.get("/admin/:userId", async (req, res, next) => {
     try {
-      if (req.session.admin && req.session.logined){
-        const userId = req.params.userId;
-        const user = await user_service.findUser_admin(userId);
+      const userId = req.params.userId;
+      const user = await user_service.findUser_admin(userId);
 
-        return res.status(200).json({ success: true, response: user });
-      } else {
-        console.log("[-] 다른 회원 정보 조회 :: 로그인 세션이 존재하지 않습니다.");
-        return res.status(201).json({ success: false });
-      }
+      return res.status(200).json({ success: true, response: user });
     } catch (e) {
       res.status(400).json({ success: false, errorMsg: e.message });
     }
   });
 
-
   // 관리자_닉네임으로 회원 목록 조회
   router.get("/admin/nickname", async (req, res, next) => {
     try {
-      if (req.session.admin && req.session.logined) {
-        const nickname = req.body.nickname;
-        const user_list = await user_service.search_By_Nickname(nickname);
+      const nickname = req.body.nickname;
+      const user_list = await user_service.search_By_Nickname(nickname);
 
-        return res.status(200).json({
-          success: true,
-          response: { count: user_list.length, user_list: user_list },
-        });
-      } else {
-        console.log("[-] 닉네임 회원 목록 조회 :: 로그인 세션이 존재하지 않거나 관리자가 아닙니다.");
-        return res.status(201).json({ success: false });
-      }
+      return res.status(200).json({
+        success: true,
+        response: { count: user_list.length, user_list: user_list },
+      });
     } catch (e) {
       res.status(400).json({ success: false, errorMsg: e.message });
     }
@@ -158,17 +102,12 @@ module.exports = (app) => {
   // 관리자_전체 회원 목록 조회
   router.get("/admin/all", async (req, res, next) => {
     try {
-      if (req.session.admin && req.session.logined) {
-        const user_list = await user_service.findAll_User();
+      const user_list = await user_service.findAll_User();
 
-        return res.status(200).json({
-          success: true,
-          response: { count: user_list.length, user_list: user_list },
-        });
-      } else {
-        console.log("[-] all 전체 회원 목록 조회 :: 로그인 세션이 존재하지 않거나 관리자가 아닙니다.");
-        return res.status(201).json({ success: false });
-      }
+      return res.status(200).json({
+        success: true,
+        response: { count: user_list.length, user_list: user_list },
+      });
     } catch (e) {
       res.status(400).json({ success: false, errorMsg: e.message });
     }
@@ -176,22 +115,13 @@ module.exports = (app) => {
 
   // 관리자_회원강제 탈퇴
   router.delete("/admin", async (req, res, next) => {
-    //router.delete("/admin", isMaster, async (req, res, next) => {
     try {
-      if (req.session.admin && req.session.logined) {
-        const target_userId = req.body.user_login_id;
+      const target_userId = req.body.user_login_id;
+      const isDeleted = await user_service.deleteUser_admin(target_userId);
 
-        const isDeleted = await user_service.deleteUser_admin(target_userId);
-
-        return res
-          .status(isDeleted ? 200 : 400)
-          .json({ success: isDeleted, response: { isDeleted: isDeleted } });
-      } else {
-        console.log(
-          "[-] 관리자_회원강제 탈퇴 :: 로그인 세션이 존재하지 않습니다."
-        );
-        return res.status(201).json({ success: false });
-      }
+      return res
+        .status(isDeleted ? 200 : 400)
+        .json({ success: isDeleted, response: { isDeleted: isDeleted } });
     } catch (e) {
       res.status(400).json({ success: false, errorMsg: e.message });
     }
@@ -200,21 +130,12 @@ module.exports = (app) => {
   // 관리자_회원탈퇴 복구
   router.post("/admin/restoration", async (req, res, next) => {
     try {
-      if (req.session.admin && req.session.logined) {
-        const target_userId = req.body.user_login_id;
-        console.log(target_userId);
+      const target_userId = req.body.user_login_id;
+      const isRestored = await user_service.reStoreUser_admin(target_userId);
 
-        const isRestored = await user_service.reStoreUser_admin(target_userId);
-
-        return res
-          .status(isRestored ? 200 : 400)
-          .json({ success: true, response: { isRestored: isRestored } });
-      } else {
-        console.log(
-          "[-] 관리자_회원강제 복구 :: 로그인 세션이 존재하지 않습니다."
-        );
-        return res.status(201).json({ success: false });
-      }
+      return res
+        .status(isRestored ? 200 : 400)
+        .json({ success: true, response: { isRestored: isRestored } });
     } catch (e) {
       res.status(400).json({ success: false, errorMsg: e.message });
     }
