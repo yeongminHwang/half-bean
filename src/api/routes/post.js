@@ -24,6 +24,21 @@ module.exports = (app) => {
     }
   });
 
+  // 조회수 증가
+  router.put("/hit", async (req, res, next) => {
+    try {
+      const post_id = req.body.post_id;
+
+      const isUpdate = await post_service.plus_hit(post_id);
+
+      return res
+        .status(200)
+        .json({ success: isUpdate, response: { isUpdate: isUpdate } });
+    } catch (e) {
+      res.status(400).json({ success: false, errorMsg: e.message });
+    }
+  });
+
   // 상품 수정
   // TODO: hit, blame_count 수정 못하게 해야함
   router.put("/:postId", async (req, res, next) => {
