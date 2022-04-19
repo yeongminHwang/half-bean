@@ -26,8 +26,8 @@ module.exports = {
         // 민감 정보 삭제
         delete user.dataValues.password;
         delete user.dataValues.is_master;
-        delete user.dataValues.updatedAt; 
-        delete user.dataValues.deletedAt; 
+        delete user.dataValues.updatedAt;
+        delete user.dataValues.deletedAt;
 
         return user.dataValues;
       }
@@ -86,8 +86,8 @@ module.exports = {
         // 민감 정보 삭제
         delete user.dataValues.password;
         delete user.dataValues.is_master;
-        delete user.dataValues.updatedAt; 
-        delete user.dataValues.deletedAt; 
+        delete user.dataValues.updatedAt;
+        delete user.dataValues.deletedAt;
 
         return user.dataValues;
       }
@@ -97,28 +97,24 @@ module.exports = {
     }
   },
 
-  
-    // 회원 정보 조회_관리자
-    async findUser_admin(userId) {
-      try {
-        const user = await db.User.findOne({ where: { user_Id: userId } });
-        // 민감 정보 삭제
-        delete user.dataValues.password;
+  // 회원 정보 조회_관리자
+  async findUser_admin(userId) {
+    try {
+      const user = await db.User.findOne({ where: { user_Id: userId } });
+      // 민감 정보 삭제
+      delete user.dataValues.password;
 
-        if (!user) {
-          throw new Error("회원 정보 조회 에러");
-        } else {
-          return user.dataValues;
-        }
-      } catch (e) {
-        console.log(e);
-        throw e;
+      if (!user) {
+        throw new Error("회원 정보 조회 에러");
+      } else {
+        return user.dataValues;
       }
-    },
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
+  },
 
-    
-
-  
   // 회원탈퇴_관리자
   async deleteUser_admin(login_id) {
     try {
@@ -188,23 +184,4 @@ module.exports = {
       throw e;
     }
   },
-  
-  // 관리자 확인
-  async isMaster(master_login_id) {
-    try {
-      const user = await db.User.findOne({
-        where: { login_id: master_login_id },
-      });
-
-      if (!user) {
-        return false;
-      } else {
-        return user.dataValues.is_master;
-      }
-    } catch (e) {
-      console.log(e);
-      throw e;
-    }
-  },
-
 };

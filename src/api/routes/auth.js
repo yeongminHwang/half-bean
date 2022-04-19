@@ -28,10 +28,8 @@ module.exports = (app) => {
   });
 
   // 로그아웃
-  // 로그아웃 할 때 세션 파괴
   router.post("/logout", async (req, res, next) => {
     try {
-      console.log(req.session.login_id);
 
       return res
         .status(200)
