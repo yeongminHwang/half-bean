@@ -9,7 +9,6 @@ module.exports = {
       const { dataValues: user } = await db.User.create({ ...userInput });
       return user;
     } catch (e) {
-      console.log(e);
       throw e;
     }
   },
@@ -17,22 +16,27 @@ module.exports = {
   // 나의 정보 조회
   async readUser(login_id) {
     try {
-      const user = await db.User.findOne({ where: { login_id: login_id } });
+      const user = await db.User.findOne({
+        attributes: [
+          "user_id",
+          "login_id",
+          "name",
+          "nickname",
+          "email",
+          "point",
+          "profile_image",
+          "createdAt",
+        ],
+        where: { login_id: login_id },
+      });
 
       if (!user) {
         // deleteAt에 데이터 채워질 시 !user는 true가 되어 여기로 잘 들어옴
         throw new Error("나의 정보 조회 에러");
-      } else {
-        // 민감 정보 삭제
-        delete user.dataValues.password;
-        delete user.dataValues.is_master;
-        delete user.dataValues.updatedAt;
-        delete user.dataValues.deletedAt;
-
-        return user.dataValues;
       }
+
+      return user.dataValues;
     } catch (e) {
-      console.log(e);
       throw e;
     }
   },
@@ -40,19 +44,25 @@ module.exports = {
   // 회원정보 수정
   async updateUser(login_id, userInput) {
     try {
-      await db.User.update({ ...userInput }, { where: { login_id: login_id } });
+      const uu = await db.User.update(
+        { ...userInput },
+        { where: { login_id: login_id } }
+      );
+
+      const isUpdate = uu[0] ? true : false;
+      if (!isUpdate) {
+        throw new Error("회원정보 업데이트 에러");
+      }
 
       const user = await db.User.findOne({
         where: { login_id: login_id },
       });
-
       if (!user) {
-        throw new Error("회원정보 업데이트 에러");
-      } else {
-        return user.dataValues;
+        throw new Error("회원정보 업데이트 후 조회 에러");
       }
+
+      return user.dataValues;
     } catch (e) {
-      console.log(e);
       throw e;
     }
   },
@@ -73,44 +83,48 @@ module.exports = {
   },
 
   // 다른 회원 정보 조회
-  async findOtherUser(userId) {
+  async findOtherUser(user_Id) {
     try {
-      const user = await db.User.findOne({ where: { user_Id: userId } });
+      const user = await db.User.findOne({
+        attributes: [
+          "user_id",
+          "login_id",
+          "name",
+          "nickname",
+          "email",
+          "point",
+          "profile_image",
+          "createdAt",
+        ],
+        where: { user_Id: user_Id },
+      });
 
       if (!user) {
         // deleteAt에 데이터 채워질 시 !user는 true가 되어 여기로 잘 들어옴
         throw new Error("다른 회원 정보 조회 에러");
       } else if (user.is_master) {
         throw new Error("관리자 계정 조회 금지");
-      } else {
-        // 민감 정보 삭제
-        delete user.dataValues.password;
-        delete user.dataValues.is_master;
-        delete user.dataValues.updatedAt;
-        delete user.dataValues.deletedAt;
-
-        return user.dataValues;
       }
+
+      return user.dataValues;
     } catch (e) {
-      console.log(e);
       throw e;
     }
   },
 
   // 회원 정보 조회_관리자
-  async findUser_admin(userId) {
+  async findUser_admin(user_Id) {
     try {
-      const user = await db.User.findOne({ where: { user_Id: userId } });
-      // 민감 정보 삭제
-      delete user.dataValues.password;
+      const user = await db.User.findOne({ where: { user_Id: user_Id } });
 
       if (!user) {
         throw new Error("회원 정보 조회 에러");
-      } else {
-        return user.dataValues;
       }
+      // 민감 정보 삭제
+      delete user.dataValues.password;
+
+      return user.dataValues;
     } catch (e) {
-      console.log(e);
       throw e;
     }
   },

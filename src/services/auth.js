@@ -47,7 +47,8 @@ module.exports = {
         from: process.env.NODEMAILER_EMAIL, // 보내는 메일의 주소
         to: email, // 수신할 이메일
         subject: "콩반쪽 이메일 인증번호입니다", // 메일 제목
-        text: "인증번호를 입력해주세요 : " + random_str, // 메일 내용
+        text:
+          random_str.length + "자리 인증번호를 입력해주세요 : " + random_str, // 메일 내용
       });
 
       return { messageId, random_str };

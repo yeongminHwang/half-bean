@@ -12,48 +12,6 @@ module.exports = (app) => {
   // ***/api/auth 로 들어오는 요청 처리 담당
   app.use("/auth", router);
 
-  // 로그인
-  // 로그인 할 때 세션 생성해야 함
-  router.post("/login", async (req, res, next) => {
-    try {
-      const { login_id, password } = req.body;
-      const user = await auth_service.login(login_id, password); // 로그인 id, pw 검증
-      
-      return res.status(200).json({ success: true, response: user });
-      
-    } catch (e) {
-      console.log(e);
-      res.status(400).json({ success: false, errorMsg: e.message });
-    }
-  });
-
-  // 로그아웃
-  router.post("/logout", async (req, res, next) => {
-    try {
-
-      return res
-        .status(200)
-        .json({ success: true, errorMsg: "로그아웃 성공" });
-    } catch (e) {
-      console.log(e);
-      res.status(400).json({ success: false, errorMsg: e.message });
-    }
-  });
-
-  // 아이디 중복확인
-  router.get("/doubleCheckId", async (req, res, next) => {
-    try {
-      const login_id = req.body.login_id;
-
-      const isDouble = await auth_service.doubleCheckId(login_id);
-
-      return res.status(200).json({ success: true, response: isDouble });
-    } catch (e) {
-      console.log(e);
-      res.status(400).json({ success: false, errorMsg: e.message });
-    }
-  });
-
   // 이메일 인증번호 전송
   router.get("/email", async (req, res, next) => {
     try {
@@ -78,6 +36,30 @@ module.exports = (app) => {
     }
   });
 
+  // 로그인
+  // 로그인 할 때 세션 생성해야 함
+  router.post("/login", async (req, res, next) => {
+    try {
+      const { login_id, password } = req.body;
+      const user = await auth_service.login(login_id, password); // 로그인 id, pw 검증
+
+      return res.status(200).json({ success: true, response: user });
+    } catch (e) {
+      console.log(e);
+      res.status(400).json({ success: false, errorMsg: e.message });
+    }
+  });
+
+  // 로그아웃
+  router.post("/logout", async (req, res, next) => {
+    try {
+      return res.status(200).json({ success: true, errorMsg: "로그아웃 성공" });
+    } catch (e) {
+      console.log(e);
+      res.status(400).json({ success: false, errorMsg: e.message });
+    }
+  });
+
   // 이메일 인증번호 확인
   router.post("/email", async (req, res, next) => {
     try {
@@ -96,17 +78,14 @@ module.exports = (app) => {
     }
   });
 
-  // 비밀번호 재설정
-  router.post("/password/reset", async (req, res, next) => {
+  // 아이디 중복확인
+  router.get("/doublecheck/id", async (req, res, next) => {
     try {
       const login_id = req.body.login_id;
-      const changePassword = req.body.changePassword;
 
-      const user = await user_service.updateUser(login_id, {
-        password: changePassword,
-      });
+      const isDouble = await auth_service.doubleCheckId(login_id);
 
-      return res.status(200).json({ success: true, response: user });
+      return res.status(200).json({ success: true, response: isDouble });
     } catch (e) {
       console.log(e);
       res.status(400).json({ success: false, errorMsg: e.message });
@@ -122,6 +101,23 @@ module.exports = (app) => {
 
       return res.status(200).json({ success: true, response: isDouble });
     } catch (e) {
+      res.status(400).json({ success: false, errorMsg: e.message });
+    }
+  });
+
+  // 비밀번호 재설정
+  router.post("/password/reset", async (req, res, next) => {
+    try {
+      const login_id = req.body.login_id;
+      const changePassword = req.body.changePassword;
+
+      const user = await user_service.updateUser(login_id, {
+        password: changePassword,
+      });
+
+      return res.status(200).json({ success: true, response: user });
+    } catch (e) {
+      console.log(e);
       res.status(400).json({ success: false, errorMsg: e.message });
     }
   });
