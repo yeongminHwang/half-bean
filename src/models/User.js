@@ -80,9 +80,11 @@ module.exports = (sequelize, DataTypes) => {
     User.hasMany(models.Post, { foreignKey: "user_id" });
     // User:User_blame_Post => 1:N
     User.hasMany(models.User_blame_Post, { foreignKey: "user_id" });
+
     User.belongsToMany(models.Post, {
       through: "User_like_Post",
       foreignKey: "user_id",
+      onDelete: "CASCADE",
     });
     // User:Point =>
     User.belongsToMany(models.Point, {
