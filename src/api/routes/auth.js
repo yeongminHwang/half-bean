@@ -18,9 +18,30 @@ module.exports = (app) => {
     try {
       const { login_id, password } = req.body;
       const user = await auth_service.login(login_id, password); // 로그인 id, pw 검증
-      
+
+      // 현재 접속중인 유저정보 담을 배열 생성
+      if (!req.session.users) {
+        req.session.users = [];
+      }
+
+      // 세션 내 동일 유저 검사 by 로그인 아이디
+      let isLogined = false;
+      for (var i = 0; i < req.session.users.length; i++) {
+        if (req.session.users[i] === user.dataValues.login_id) {
+          isLogined = true;
+          break;
+        }
+      }
+
+      // 로그인 되어있지 않은 유저만 세션에 넣도록
+      if (!isLogined) {
+        req.session.users.push(user.dataValues.login_id);
+      }
+
+      console.log(req.session);
+      console.log("현재접속인원 : ", req.session.users.length);
+
       return res.status(200).json({ success: true, response: user });
-      
     } catch (e) {
       console.log(e);
       res.status(400).json({ success: false, errorMsg: e.message });
@@ -28,12 +49,22 @@ module.exports = (app) => {
   });
 
   // 로그아웃
+  // 로그아웃 할 때 세션 파괴
   router.post("/logout", async (req, res, next) => {
     try {
+      const login_id = req.body.login_id;
 
-      return res
-        .status(200)
-        .json({ success: true, errorMsg: "로그아웃 성공" });
+      // 세션에서 로그인 아이디 찾아서 제거
+      for (var i = 0; i < req.session.users.length; i++) {
+        if (req.session.users[i] === login_id) {
+          req.session.users.splice(i, 1);
+          break;
+        }
+      }
+
+      console.log("현재접속인원 : ", req.session.users.length);
+
+      return res.status(200).json({ success: true });
     } catch (e) {
       console.log(e);
       res.status(400).json({ success: false, errorMsg: e.message });
